@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import os
-import baixar
+
 
 
 
@@ -15,14 +15,24 @@ class scrapping:
         self.urls_para_baixar = []
         self.lista = []
         self.lista_final = []
-        self.OUTPUT_DIR = "arquivos"
+        self.OUTPUT_DIR = "output"
         self.index = 0
     
     def Iniciar(self):
         self.achar_links()
         self.entrar_links()
+        self.formatar_urls()
+      
         
-
+    
+    
+    
+    def baixar(self):
+        for h in self.lista_final:
+            OUTPUT_DIR = 'output'
+            nome_arquivo = os.path.join(OUTPUT_DIR, 'arquivo{}'.format(self.index(self.index)))
+            self.baixar_arquivo(h,nome_arquivo)
+            self.index += 1
 # Acha os links  e os adiciona em uma lista 
     def achar_links(self):
         for self.link in self.links.find_all('a'):
@@ -50,26 +60,30 @@ class scrapping:
             for i in self.arquivoscsv.find_all('p'):
                 self.pegar_link = i.get('href')
                 # faço outro tratamento
-                if '/dataset' in self.pegar_link:
+                if self.pegar_link != None:
                     self.urls_para_baixar.append(self.pegar_link)
         
         
 
 
-    def formatar_urls_e_baixar(self):
+    def formatar_urls(self):
         for j in self.urls_para_baixar:
+            print(j)
             if "http://dados.ufop.br" not in j:
-               self.arrumado = self.lista_final.append('http://dados.ufop.br'+ j)
+               self.lista_final.append('http://dados.ufop.br'+ j)
         
             else:
-                self.arrumado = self.lista_final.append(j)
-
-            self.nome_arquivo = os.path.join(self.OUTPUT_DIR, f'arquivo{self.index}.csv')
-            baixar.baixar_arquivo(self.arrumado, self.nome_arquivo)
-            self.index += 1
-
-
-
+                self.lista_final.append(j)
+        print(self.lista_final)
+    def baixar_arquivo(url, endereco ):
+        #Faz uma requisição ao servidor
+        resposta = requests.get(url)
+        if resposta.status_code == requests.codes.OK:   
+            with open(endereco, 'wb') as arquivo:
+                arquivo.write(resposta.content)
+            print(f"Dowload feito com sucesso. salvo em {endereco}")
+        else:
+            resposta.raise_for_status()
 
 
 
