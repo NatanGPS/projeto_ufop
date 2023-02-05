@@ -20,7 +20,10 @@ class scrapping:
     def Iniciar(self):
         self.achar_links()
         self.entrar_links()
-        self.baixar_arquivo(self.filtrar_links(), self.arquivo())
+        #self.arquivo()
+        self.filtrar_links()
+        
+        
 
 
 # Acha os links  e os adiciona em uma lista 
@@ -46,20 +49,25 @@ class scrapping:
             self.pegar_link = self.cada_um.get('href')
             if self.pegar_link != '#':
                 if 'mailto:' not in self.pegar_link:  
-                    self.urls_para_baixar.append(self.pegar_link)
+                    if '.csv' in self.pegar_link:
+                        self.urls_para_baixar.append(self.pegar_link)
 
-    def arquivo(self):
-        for j in range(len(self.urls_para_baixar)):
-            self.nome_arquivo = os.path.join(self.OUTPUT_DIR, f'arquivo{self.index}.csv')
-            self.index += 1
+    #def arquivo(self):
+        #for j in range(len(self.urls_para_baixar)):
+            #self.nome_arquivo = os.path.join(self.OUTPUT_DIR, f'arquivo{self.index}.csv')
+            #self.index += 1
     
     def filtrar_links(self):
         for self.formata_isso_pfv in self.urls_para_baixar:
             if "http://dados.ufop.br" not in self.formata_isso_pfv:
-               self.urls = ('http://dados.ufop.br'+ self.formata_isso_pfv)
-    
+               urls = ('http://dados.ufop.br'+ self.formata_isso_pfv)
+            
             else:
-                self.urls = self.formata_isso_pfv
+                urls = self.formata_isso_pfv
+            nome_arquivo = os.path.join(self.OUTPUT_DIR, f'arquivo{self.index}.csv')
+            self.index += 1
+            self.baixar_arquivo(urls, nome_arquivo)
+            
 # Essa funcao vai baixar os arquivos a partiir das urls da lista self.urls_para_baixar     
     
     def baixar_arquivo(self, url, endereco ):
